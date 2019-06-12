@@ -196,7 +196,7 @@ namespace GamenShot
         {
             // 開始位置を初期化
             this.startPoint = point;
-            this.currentRectangle = new Rectangle(0, 0, 0, 0);
+            this.currentRectangle = new Rectangle();
             // 行動カウンタ = 1
             this.actionCount = 1;
         }
@@ -207,6 +207,11 @@ namespace GamenShot
         /// <param name="point">マウスカーソルの位置</param>
         private void MoveSelectRectangle(Point point)
         {
+            // 前回描画したラバーバンドの消去
+            if(!this.currentRectangle.IsEmpty)
+            {
+                this.DrawScreenRectangle(this.currentRectangle);
+            }
             // 今回描画するラバーバンドの矩形計算
             this.currentRectangle = this.GetScreenRectangle(this.startPoint, point);
             // 今回描画するラバーバンドの描画
@@ -218,8 +223,12 @@ namespace GamenShot
         /// </summary>
         private void RevertSelectRectangle()
         {
-            // 行動カウンタを減算して表示更新
-            this.pictureBox.Refresh();
+            // 前回描画したラバーバンドの消去
+            if (!this.currentRectangle.IsEmpty)
+            {
+                this.DrawScreenRectangle(this.currentRectangle);
+            }
+            // 行動カウンタを減算
             this.actionCount--;
         }
 
@@ -301,8 +310,7 @@ namespace GamenShot
         /// <param name="rectangle">描画する矩形範囲</param>
         private void DrawScreenRectangle(Rectangle rectangle)
         {
-            this.pictureBox.Refresh();
-            ControlPaint.DrawReversibleFrame(rectangle, Color.White, FrameStyle.Dashed);
+            ControlPaint.DrawReversibleFrame(rectangle, Color.FromArgb(128,Color.Red), FrameStyle.Dashed);
         }
 
         /// <summary>
