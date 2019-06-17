@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace GamenShot
@@ -337,11 +338,26 @@ namespace GamenShot
         /// <param name="state">キーボードの状態</param>
         void KeyboardHook_GetKeyState(ref KeyboardHook.StateKeyboard state)
         {
+            if (this.isCapturing && state.Stroke == KeyboardHook.Stroke.KEY_UP)
+            {
+                this.isCapturing = false;
+            }
+            else if (this.isCapturing)
+            {
+                return;
+            }
+            else if(!this.isCapturing && state.Stroke == KeyboardHook.Stroke.KEY_DOWN)
+            {
+                this.isCapturing = true;
+            }
+#if DEBUG
+            Debug.WriteLine($"Ctrl:{state.WithControl.ToString()}, Shift:{state.WithShift.ToString()}, Alt:{state.WithAlt.ToString()}, F11:{(state.Key == Keys.F11).ToString()}");
+#endif
             // Ctrlキー
             if (state.WithControl)
             {
                 // Shiftキー＋ALTキー
-                if(state.WithShift && state.WithAlt)
+                if (state.WithShift && state.WithAlt)
                 {
                     // F10キー
                     if (state.Key == Keys.F10)
@@ -541,46 +557,34 @@ namespace GamenShot
         /// <param name="type">キャプチャ種類</param>
         private void CaptureImage(CaptureTarget target, CaptureType type)
         {
-            if(this.isCapturing)
+            // 矩形領域
+            if (target == CaptureTarget.RectArea)
             {
-                return;
-            }
-            try
-            {
-                this.isCapturing = true;
-                // 矩形領域
-                if (target == CaptureTarget.RectArea)
+                using (Bitmap screenBitmap = this.CaptureScreen())
+                using (CaptureForm captureForm = new CaptureForm(screenBitmap))
                 {
-                    using (Bitmap screenBitmap = this.CaptureScreen())
-                    using (CaptureForm captureForm = new CaptureForm(screenBitmap))
-                    {
-                        captureForm.ShowDialog();
-                        using (Bitmap captureBitmap = captureForm.CaptureBitmap)
-                        {
-                            this.SaveImage(captureBitmap, type);
-                        }
-                    }
-                }
-                // デスクトップ
-                else if (target == CaptureTarget.Desktop)
-                {
-                    using (Bitmap captureBitmap = this.CaptureScreen())
-                    {
-                        this.SaveImage(captureBitmap, type);
-                    }
-                }
-                // アクティブウィンドウ
-                else if (target == CaptureTarget.ActiveWindow)
-                {
-                    using (Bitmap captureBitmap = this.CaptureActiveWindow())
+                    captureForm.ShowDialog();
+                    using (Bitmap captureBitmap = captureForm.CaptureBitmap)
                     {
                         this.SaveImage(captureBitmap, type);
                     }
                 }
             }
-            finally
+            // デスクトップ
+            else if (target == CaptureTarget.Desktop)
             {
-                this.isCapturing = false;
+                using (Bitmap captureBitmap = this.CaptureScreen())
+                {
+                    this.SaveImage(captureBitmap, type);
+                }
+            }
+            // アクティブウィンドウ
+            else if (target == CaptureTarget.ActiveWindow)
+            {
+                using (Bitmap captureBitmap = this.CaptureActiveWindow())
+                {
+                    this.SaveImage(captureBitmap, type);
+                }
             }
         }
 
