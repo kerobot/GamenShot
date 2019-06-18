@@ -75,6 +75,17 @@
     <Compile Include="Hook\InputSimulator.cs" />
     <Compile Include="Hook\KeyboardHook.cs" />
     <Compile Include="Hook\MouseHook.cs" />
+    <Compile Include="nQuant\Box.cs" />
+    <Compile Include="nQuant\ColorData.cs" />
+    <Compile Include="nQuant\CubeCut.cs" />
+    <Compile Include="nQuant\IWuQuantizer.cs" />
+    <Compile Include="nQuant\Lookup.cs" />
+    <Compile Include="nQuant\LookupData.cs" />
+    <Compile Include="nQuant\Pixel.cs" />
+    <Compile Include="nQuant\QuantizationException.cs" />
+    <Compile Include="nQuant\QuantizedPalette.cs" />
+    <Compile Include="nQuant\WuQuantizer.cs" />
+    <Compile Include="nQuant\WuQuantizerBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\BitmapUtility.cs" />

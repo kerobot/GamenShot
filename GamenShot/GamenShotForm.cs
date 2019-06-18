@@ -1,5 +1,6 @@
 ﻿using GamenShot.Hook;
 using GamenShot.Utilities;
+using GamenShot.nQuant;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -607,7 +608,13 @@ namespace GamenShot
                 // PNGに変換したうえでクリップボードに格納
                 using (MemoryStream stream = new MemoryStream())
                 {
-                    bitmap.Save(stream, ImageFormat.Png);
+                    //bitmap.Save(stream, ImageFormat.Png);
+                    // インデックスカラー(8bit)に変換
+                    var quantizer = new WuQuantizer();
+                    using (var quantized = quantizer.QuantizeImage(bitmap, 10, 70))
+                    {
+                        quantized.Save(stream, ImageFormat.Png);
+                    }
                     var data = new DataObject("PNG", stream);
                     Clipboard.Clear();
                     Clipboard.SetDataObject(data, true);
@@ -616,7 +623,13 @@ namespace GamenShot
             // PNG
             else if (type == CaptureType.Png)
             {
-                bitmap.Save(Path.Combine(saveFolderPath, $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.png"), ImageFormat.Png);
+                //bitmap.Save(Path.Combine(saveFolderPath, $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.png"), ImageFormat.Png);
+                // インデックスカラー(8bit)に変換
+                var quantizer = new WuQuantizer();
+                using (var quantized = quantizer.QuantizeImage(bitmap, 10, 70))
+                {
+                    quantized.Save(Path.Combine(saveFolderPath, $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.png"), ImageFormat.Png);
+                }
             }
             // Bitmap
             else if (type == CaptureType.Bitmap)
