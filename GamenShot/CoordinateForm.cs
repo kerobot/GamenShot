@@ -8,6 +8,10 @@ namespace GamenShot
     public partial class CoordinateForm : Form
     {
         /// <summary>
+        /// 親フォーム
+        /// </summary>
+        private CaptureForm captureForm = null;
+        /// <summary>
         /// 矩形選択対象のビットマップ
         /// </summary>
         private Bitmap screenBitmap = null;
@@ -15,6 +19,10 @@ namespace GamenShot
         /// マウスカーソルの初期位置
         /// </summary>
         private Point mousePoint = new Point();
+        /// <summary>
+        /// 元のカーソル
+        /// </summary>
+        private Cursor originalCursor = null;
         /// <summary>
         /// 拡大率
         /// </summary>
@@ -25,11 +33,34 @@ namespace GamenShot
         /// </summary>
         /// <param name="screenBitmap">矩形選択対象のビットマップ</param>
         /// <param name="mousePoiont">マウスカーソルの初期位置</param>
-        public CoordinateForm(Bitmap screenBitmap, Point mousePoiont)
+        public CoordinateForm(CaptureForm captureForm, Bitmap screenBitmap, Point mousePoiont)
         {
+            // コンポーネントの初期化
             InitializeComponent();
+            // マウスイベントハンドラの初期化
+            this.InitializeMouseEventHandler(this);
+            // 親フォーム
+            this.captureForm = captureForm;
+            // 矩形選択対象のBitmap
             this.screenBitmap = screenBitmap;
+            // マウス位置
             this.mousePoint = mousePoiont;
+        }
+
+        private void InitializeMouseEventHandler(Control control)
+        {
+            // イベントの設定（親フォームは除外）
+            if (control != this)
+            {
+                control.MouseDown += (sender, e) => this.OnMouseDown(e);
+                control.MouseMove += (sender, e) => this.OnMouseMove(e);
+                //control.MouseUp += (sender, e) => this.OnMouseUp(e);
+            }
+            // 子コントロールに対するイベントの設定
+            foreach (Control child in control.Controls)
+            {
+                InitializeMouseEventHandler(child);
+            }
         }
 
         /// <summary>
@@ -43,6 +74,38 @@ namespace GamenShot
             this.UpdateCoordinate(this.mousePoint);
         }
 
+        /// <summary>
+        /// キー押下の際に呼び出されるイベントメソッド
+        /// </summary>
+        /// <param name="sender">イベント送出元</param>
+        /// <param name="e">イベント引数</param>
+        private void CoordinateForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // キー操作を親フォームの処理とする
+            this.captureForm.CaptureForm_KeyDown(sender, e);
+        }
+
+        /// <summary>
+        /// マウスクリックの際に呼び出されるイベントメソッド
+        /// </summary>
+        /// <param name="sender">イベント送出元</param>
+        /// <param name="e">イベント引数</param>
+        private void CoordinateForm_MouseDown(object sender, MouseEventArgs e)
+        {
+            // マウス操作を親フォームの処理とする
+            this.captureForm.PictureBox_MouseDown(sender, e);
+        }
+
+        /// <summary>
+        /// マウス移動の際に呼び出されるイベントメソッド
+        /// </summary>
+        /// <param name="sender">イベント送出元</param>
+        /// <param name="e">イベント引数</param>
+        private void CoordinateForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            // マウス操作を親フォームの処理とする
+            this.captureForm.PictureBox_MouseMove(sender, e);
+        }
 
         /// <summary>
         /// フォームを閉じる際に呼び出されるイベントメソッド
@@ -56,6 +119,32 @@ namespace GamenShot
             if (bitmap != null)
             {
                 bitmap.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// マウスポインタがピクチャボックスの表示範囲に入った際に呼び出されるイベントメソッド
+        /// </summary>
+        /// <param name="sender">イベント送出元</param>
+        /// <param name="e">イベント引数</param>
+        private void PictureBox_MouseEnter(object sender, EventArgs e)
+        {
+            // マウスカーソル変更
+            this.originalCursor = this.Cursor;
+            this.Cursor = Cursors.Cross;
+        }
+
+        /// <summary>
+        /// マウスポインタがピクチャボックスの表示範囲から出た際に呼び出されるイベントメソッド
+        /// </summary>
+        /// <param name="sender">イベント送出元</param>
+        /// <param name="e">イベント引数</param>
+        private void PictureBox_MouseLeave(object sender, EventArgs e)
+        {
+            // マウスカーソル戻す
+            if (this.originalCursor != this.Cursor)
+            {
+                this.Cursor = this.originalCursor;
             }
         }
 

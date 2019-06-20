@@ -170,13 +170,14 @@
         /// <exception cref="System.ComponentModel.Win32Exception"></exception>
         public static void Start()
         {
+            IsPaused = false;
+
             if (IsHooking)
             {
                 return;
             }
 
             IsHooking = true;
-            IsPaused = false;
 
             hookCallback = HookProcedure;
             System.IntPtr h = System.Runtime.InteropServices.Marshal.GetHINSTANCE(typeof(MouseHook).Assembly.GetModules()[0]);

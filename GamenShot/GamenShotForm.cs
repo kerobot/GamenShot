@@ -1,6 +1,6 @@
 ﻿using GamenShot.Hook;
-using GamenShot.Utilities;
 using GamenShot.nQuant;
+using GamenShot.Utilities;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,7 +8,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace GamenShot
@@ -558,34 +557,45 @@ namespace GamenShot
         /// <param name="type">キャプチャ種類</param>
         private void CaptureImage(CaptureTarget target, CaptureType type)
         {
-            // 矩形領域
-            if (target == CaptureTarget.RectArea)
+            try
             {
-                using (Bitmap screenBitmap = this.CaptureScreen())
-                using (CaptureForm captureForm = new CaptureForm(screenBitmap))
+                // キーボードフック中断
+                KeyboardHook.Pause();
+
+                // 矩形領域
+                if (target == CaptureTarget.RectArea)
                 {
-                    captureForm.ShowDialog();
-                    using (Bitmap captureBitmap = captureForm.CaptureBitmap)
+                    using (Bitmap screenBitmap = this.CaptureScreen())
+                    using (CaptureForm captureForm = new CaptureForm(screenBitmap))
+                    {
+                        captureForm.ShowDialog();
+                        using (Bitmap captureBitmap = captureForm.CaptureBitmap)
+                        {
+                            this.SaveImage(captureBitmap, type);
+                        }
+                    }
+                }
+                // デスクトップ
+                else if (target == CaptureTarget.Desktop)
+                {
+                    using (Bitmap captureBitmap = this.CaptureScreen())
+                    {
+                        this.SaveImage(captureBitmap, type);
+                    }
+                }
+                // アクティブウィンドウ
+                else if (target == CaptureTarget.ActiveWindow)
+                {
+                    using (Bitmap captureBitmap = this.CaptureActiveWindow())
                     {
                         this.SaveImage(captureBitmap, type);
                     }
                 }
             }
-            // デスクトップ
-            else if (target == CaptureTarget.Desktop)
+            finally
             {
-                using (Bitmap captureBitmap = this.CaptureScreen())
-                {
-                    this.SaveImage(captureBitmap, type);
-                }
-            }
-            // アクティブウィンドウ
-            else if (target == CaptureTarget.ActiveWindow)
-            {
-                using (Bitmap captureBitmap = this.CaptureActiveWindow())
-                {
-                    this.SaveImage(captureBitmap, type);
-                }
+                // キーボードフック再開
+                KeyboardHook.Start();
             }
         }
 

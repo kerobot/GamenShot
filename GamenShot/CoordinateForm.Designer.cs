@@ -40,6 +40,8 @@
             this.pictureBox.Size = new System.Drawing.Size(128, 128);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
+            this.pictureBox.MouseEnter += new System.EventHandler(this.PictureBox_MouseEnter);
+            this.pictureBox.MouseLeave += new System.EventHandler(this.PictureBox_MouseLeave);
             // 
             // CoordinateForm
             // 
@@ -48,6 +50,7 @@
             this.ClientSize = new System.Drawing.Size(128, 128);
             this.Controls.Add(this.pictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(144, 167);
             this.MinimizeBox = false;
@@ -59,6 +62,9 @@
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CoordinateForm_FormClosing);
             this.Load += new System.EventHandler(this.CoordinateForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CoordinateForm_KeyDown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CoordinateForm_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.CoordinateForm_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
 

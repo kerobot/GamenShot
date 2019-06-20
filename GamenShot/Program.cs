@@ -47,6 +47,7 @@ namespace GamenShot
                     }
                     finally
                     {
+                        // キーボードフックの停止
                         if (KeyboardHook.IsHooking)
                         {
                             KeyboardHook.Stop();

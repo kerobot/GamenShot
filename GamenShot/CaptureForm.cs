@@ -41,7 +41,9 @@ namespace GamenShot
         /// <param name="screenBitmap">スクリーン画像</param>
         public CaptureForm(Bitmap screenBitmap)
         {
+            // コンポーネントの初期化
             InitializeComponent();
+            // 矩形選択対象のBitmap
             this.screenBitmap = screenBitmap;
         }
 
@@ -66,7 +68,7 @@ namespace GamenShot
             this.originalCursor = this.Cursor;
             this.Cursor = Cursors.Cross;
             // 座標画面
-            this.coordinateForm = new CoordinateForm(this.screenBitmap, Cursor.Position);
+            this.coordinateForm = new CoordinateForm(this, this.screenBitmap, Cursor.Position);
             this.coordinateForm.Show(this);
         }
 
@@ -75,7 +77,7 @@ namespace GamenShot
         /// </summary>
         /// <param name="sender">イベント送出元</param>
         /// <param name="e">イベント引数</param>
-        private void CaptureForm_KeyDown(object sender, KeyEventArgs e)
+        public void CaptureForm_KeyDown(object sender, KeyEventArgs e)
         {
             // ESCキー
             if (e.KeyCode == Keys.Escape)
@@ -131,18 +133,24 @@ namespace GamenShot
         /// </summary>
         /// <param name="sender">イベント送出元</param>
         /// <param name="e">イベント引数</param>
-        private void PictureBox_MouseDown(object sender, MouseEventArgs e)
+        public void PictureBox_MouseDown(object sender, MouseEventArgs e)
         {
+            // マウスのスクリーン座標をフォーム座標に変換
+            Point screenPoint = Control.MousePosition;
+            Point capturePoint = this.PointToClient(screenPoint);
+
             // 左ボタン
             if (e.Button == MouseButtons.Left)
             {
                 if (this.actionCount == 0)
                 {
-                    this.StartSelectRectangle(new Point(e.X, e.Y));
+                    // 矩形選択開始
+                    this.StartSelectRectangle(capturePoint);
                 }
                 else if (this.actionCount == 1)
                 {
-                    this.EndSelectRectangle(new Point(e.X, e.Y));
+                    // 矩形選択終了
+                    this.EndSelectRectangle(capturePoint);
                 }
             }
             // 右ボタン
@@ -150,6 +158,7 @@ namespace GamenShot
             {
                 if (this.actionCount > 0)
                 {
+                    // 矩形選択戻し
                     this.RevertSelectRectangle();
                 }
             }
@@ -160,13 +169,19 @@ namespace GamenShot
         /// </summary>
         /// <param name="sender">イベント送出元</param>
         /// <param name="e">イベント引数</param>
-        private void PictureBox_MouseMove(object sender, MouseEventArgs e)
+        public void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
+            // マウスのスクリーン座標をフォーム座標に変換
+            Point screenPoint = Control.MousePosition;
+            Point capturePoint = this.PointToClient(screenPoint);
+
             if (this.actionCount == 1)
             {
-                this.MoveSelectRectangle(new Point(e.X, e.Y));
+                // 矩形選択移動
+                this.MoveSelectRectangle(capturePoint);
             }
-            this.coordinateForm.UpdateCoordinate(new Point(e.X, e.Y));
+            // 座標画面を更新
+            this.coordinateForm.UpdateCoordinate(capturePoint);
         }
 
         /// <summary>
@@ -177,7 +192,7 @@ namespace GamenShot
         private void CaptureForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // 座標画面を閉じる
-            if(this.coordinateForm != null)
+            if (this.coordinateForm != null)
             {
                 this.coordinateForm.Close();
             }
@@ -228,6 +243,8 @@ namespace GamenShot
             {
                 this.DrawScreenRectangle(this.currentRectangle);
             }
+            // HACK:NVIDIA GeForce GT 710 では、Refreshしないとラバーバンドが残る
+            this.pictureBox.Refresh();
             // 行動カウンタを減算
             this.actionCount--;
         }
