@@ -330,7 +330,7 @@ namespace GamenShot
             // HACK:NVIDIA GeForce GT 710 では、Refreshしないとラバーバンドが残る
             this.pictureBox.Refresh();
             // ラバーバンドの描画
-            ControlPaint.DrawReversibleFrame(rectangle, Color.FromArgb(255,Color.Red), FrameStyle.Dashed);
+            ControlPaint.DrawReversibleFrame(rectangle, Color.FromArgb(255,Color.Cyan), FrameStyle.Dashed);
         }
 
         /// <summary>
