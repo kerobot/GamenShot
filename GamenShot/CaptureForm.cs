@@ -310,7 +310,10 @@ namespace GamenShot
         /// <param name="rectangle">描画する矩形範囲</param>
         private void DrawScreenRectangle(Rectangle rectangle)
         {
-            ControlPaint.DrawReversibleFrame(rectangle, Color.FromArgb(128,Color.Red), FrameStyle.Dashed);
+            // HACK:NVIDIA GeForce GT 710 では、Refreshしないとラバーバンドが残る
+            this.pictureBox.Refresh();
+            // ラバーバンドの描画
+            ControlPaint.DrawReversibleFrame(rectangle, Color.FromArgb(255,Color.Red), FrameStyle.Dashed);
         }
 
         /// <summary>
@@ -320,6 +323,7 @@ namespace GamenShot
         /// <returns>切り出したビットマップ</returns>
         private Bitmap CaptureRegion(Rectangle rectangle)
         {
+            // 画面全体のBitmapから指定した矩形範囲のBitmapを切り出す
             Bitmap bmp = new Bitmap(rectangle.Width, rectangle.Height);
             using (Graphics graphics = Graphics.FromImage(bmp))
             {
