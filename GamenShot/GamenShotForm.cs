@@ -2,6 +2,8 @@
 using GamenShot.nQuant;
 using GamenShot.Utilities;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -550,6 +552,20 @@ namespace GamenShot
             KeyboardHook.Start();
         }
 
+        //private IEnumerable<IntPtr> GetWindowHandles(IntPtr handle, int indent)
+        //{
+        //    yield return handle;
+        //    var childHandles = new ChildWindowHandles(handle);
+        //    if(!childHandles.Any())
+        //    {
+        //        yield break;
+        //    }
+        //    foreach (var childHandle in childHandles)
+        //    {
+        //        yield return childHandle;
+        //    }
+        //}
+
         /// <summary>
         /// 指定した対象を指定した種類でキャプチャする
         /// </summary>
@@ -557,6 +573,17 @@ namespace GamenShot
         /// <param name="type">キャプチャ種類</param>
         private void CaptureImage(CaptureTarget target, CaptureType type)
         {
+            //List<WindowInfo> windowInfos = new List<WindowInfo>();
+            //foreach (var handle in new TopLevelWindowHandles())
+            //{
+            //    windowInfos.Add(new WindowInfo(handle));
+            //}
+
+            //foreach(var windowInfo in windowInfos)
+            //{
+            //    Console.WriteLine($"{windowInfo.WindowText} : {windowInfo.ClassName}");
+            //}
+
             try
             {
                 // キーボードフック中断
